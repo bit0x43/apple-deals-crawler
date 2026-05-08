@@ -10,8 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Status
 
 **Milestone:** v1.0
-**Active phase:** None (not started)
-**Last action:** Project initialized
+**Active phase:** Phase 1 — Project Foundation
+**Last action:** Phase 1 context gathered (2026-05-08)
+**Resume file:** .planning/phases/01-project-foundation/01-CONTEXT.md
 
 ## Phase Progress
 
