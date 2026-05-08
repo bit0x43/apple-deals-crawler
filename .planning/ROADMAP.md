@@ -75,12 +75,17 @@
 ### Phase 3: Database & Maintenance
 **Goal:** PostgreSQL backend support + rolling-window pruner + maintenance CLI commands.
 **Mode:** mvp
+**Plans:** 2 plans
 
 **Requirements:**
 - DB-02: PostgreSQL via DATABASE_URL env var (Neon)
 - DB-03: 90-day rolling window auto-prune
 - DB-04: `apple-deals db clean` with --dry-run
 - DB-05: `apple-deals db stats`
+
+**Plans:**
+- [ ] 03-01-PLAN.md — psycopg2-binary optional dep + db/crud.py (prune_old_records, count_prunable, get_db_stats) + unit tests
+- [ ] 03-02-PLAN.md — Implement db_clean (--days, --dry-run), db_stats (Rich table), _auto_prune hook in crawl()
 
 **Success Criteria:**
 1. Setting DATABASE_URL to a Neon connection string switches backend with no code changes
@@ -196,4 +201,4 @@
 
 ---
 *Roadmap created: 2026-05-08*
-*Last updated: 2026-05-08 — Phase 2 plans created (3 plans, 3 waves)*
+*Last updated: 2026-05-08 — Phase 3 plans created (2 plans, 2 waves)*
