@@ -11,7 +11,7 @@
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 1 | Project Foundation | Repo + tooling + DB models + CLI skeleton | DEV-01..04, DB-01, CLI-03 | 6 | 4 |
+| 1 | ~~Project Foundation~~ ✅ | Repo + tooling + DB models + CLI skeleton | DEV-01..04, DB-01, CLI-03 | 6 | 4 |
 | 2 | Crawling Core | Working crawlers with change-only storage | CRAWL-01..04, CLI-01 | 5 | 4 |
 | 3 | Database & Maintenance | Postgres support + pruner + maintenance CLI | DB-02..05 | 4 | 4 |
 | 4 | TUI | Interactive catalog + history views | TUI-01..04, CLI-02 | 5 | 5 |

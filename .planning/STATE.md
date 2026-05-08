@@ -10,15 +10,15 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Status
 
 **Milestone:** v1.0
-**Active phase:** Phase 1 — Project Foundation
-**Last action:** Phase 1 context gathered (2026-05-08)
-**Resume file:** .planning/phases/01-project-foundation/01-CONTEXT.md
+**Active phase:** Phase 2 — Crawling Core
+**Last action:** Phase 1 complete — verification passed 11/11 (2026-05-08)
+**Resume file:** .planning/phases/02-crawling-core/
 
 ## Phase Progress
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Project Foundation | Not started |
+| 1 | Project Foundation | Complete ✅ |
 | 2 | Crawling Core | Not started |
 | 3 | Database & Maintenance | Not started |
 | 4 | TUI | Not started |
