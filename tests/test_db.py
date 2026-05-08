@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine, inspect
 
 from apple_deals.db.models import Base
-from apple_deals.db.session import init_db
 
 
 def test_init_db_creates_products_table() -> None:
@@ -17,7 +16,18 @@ def test_products_table_has_correct_columns() -> None:
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     columns = {col["name"] for col in inspect(engine).get_columns("products")}
-    required = {"id", "reference", "sku", "memory", "storage", "color", "price", "url", "source", "crawled_at"}
+    required = {
+        "id",
+        "reference",
+        "sku",
+        "memory",
+        "storage",
+        "color",
+        "price",
+        "url",
+        "source",
+        "crawled_at",
+    }
     assert required == columns
 
 

@@ -20,6 +20,4 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Numeric(precision=12, scale=2), nullable=False)
     url: Mapped[str] = mapped_column(String(2048), nullable=False)
     source: Mapped[str] = mapped_column(String(100), nullable=False)
-    crawled_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=func.now()
-    )
+    crawled_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())

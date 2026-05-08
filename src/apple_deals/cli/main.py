@@ -29,7 +29,9 @@ def tui() -> None:
 
 @db_app.command("clean")
 def db_clean(
-    dry_run: bool = typer.Option(False, "--dry-run", help="Preview rows to delete without deleting."),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Preview rows to delete without deleting."
+    ),
 ) -> None:
     """Prune records outside the retention window."""
     typer.echo("Command not yet implemented.")

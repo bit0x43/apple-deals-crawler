@@ -1,7 +1,7 @@
 # apple-deals-crawler — Project Instructions
 
 ## What this project is
-A Python-based web crawler and CLI tool that tracks daily prices of Apple Mac products 
+A Python-based web crawler and CLI tool that tracks daily prices of Apple Mac products
 (MacBook Air, MacBook Pro, Mac Mini, Mac Studio) from Colombian retailers:
 - https://co.tiendasishop.com/
 - https://mac-center.com/
