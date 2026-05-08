@@ -50,6 +50,7 @@
 ### Phase 2: Crawling Core
 **Goal:** Both scrapers crawl live product pages, persist records with deduplication, and are invocable via CLI.
 **Mode:** mvp
+**Plans:** 3 plans
 
 **Requirements:**
 - CRAWL-01: Crawl tiendasishop.com (Playwright)
@@ -57,6 +58,11 @@
 - CRAWL-03: Full product record schema stored per crawl
 - CRAWL-04: Change-only storage (skip unchanged prices)
 - CLI-01: `apple-deals crawl` command
+
+**Plans:**
+- [ ] 02-01-PLAN.md — ProductData TypedDict + BaseCrawler ABC + parse_title() + JSON fixtures + unit tests
+- [ ] 02-02-PLAN.md — TiendasishopCrawler + MacCenterCrawler + db/crud.py + deduplication unit tests
+- [ ] 02-03-PLAN.md — CLI crawl command wiring + playwright dependency + live crawl verification
 
 **Success Criteria:**
 1. `apple-deals crawl` fetches products from both stores and prints a summary
@@ -190,4 +196,4 @@
 
 ---
 *Roadmap created: 2026-05-08*
-*Last updated: 2026-05-08 — Phase 1 plans created (3 plans, 2 waves)*
+*Last updated: 2026-05-08 — Phase 2 plans created (3 plans, 3 waves)*
