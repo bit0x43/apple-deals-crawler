@@ -24,6 +24,7 @@
 ### Phase 1: Project Foundation
 **Goal:** Establish repo structure, dev tooling, DB models, and CLI entrypoint — everything subsequent phases build on.
 **Mode:** mvp
+**Plans:** 3 plans
 
 **Requirements:**
 - DEV-01: Pre-commit hooks — secret scanning
@@ -32,6 +33,11 @@
 - DEV-04: Pre-commit hooks — file hygiene
 - DB-01: SQLite default backend
 - CLI-03: --help for all commands
+
+**Plans:**
+- [ ] 01-01-PLAN.md — Project scaffold: pyproject.toml, package tree, .python-version, .gitignore
+- [ ] 01-02-PLAN.md — DB models + session + CLI entrypoint + tests (Walking Skeleton)
+- [ ] 01-03-PLAN.md — Pre-commit hooks, secrets baseline, validate all hooks pass
 
 **Success Criteria:**
 1. `pre-commit run --all-files` passes on a clean checkout
@@ -184,4 +190,4 @@
 
 ---
 *Roadmap created: 2026-05-08*
-*Last updated: 2026-05-08 after initialization*
+*Last updated: 2026-05-08 — Phase 1 plans created (3 plans, 2 waves)*
