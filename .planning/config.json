@@ -6,9 +6,12 @@
   "model_profile": "balanced",
   "workflow": {
     "research": true,
-    "plan_check": true,
+    "plan_check": false,
     "verifier": true,
-    "nyquist_validation": true,
-    "auto_advance": false
+    "nyquist_validation": false,
+    "auto_advance": false,
+    "pattern_mapper": false,
+    "code_review": false,
+    "skip_discuss": true
   }
 }
