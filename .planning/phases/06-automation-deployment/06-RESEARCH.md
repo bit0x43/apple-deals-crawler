@@ -503,7 +503,7 @@ volumes:
 # NEVER commit .env to git
 
 # Database (use either SQLite default or PostgreSQL)
-# DATABASE_URL=postgresql://crawler:crawler@localhost:5432/apple_deals
+# DATABASE_URL=postgresql://crawler:crawler@localhost:5432/apple_deals  # pragma: allowlist secret
 
 # Telegram alerts (optional — crawl runs without these)
 # TELEGRAM_BOT_TOKEN=your_bot_token_here
