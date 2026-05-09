@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+import os
+from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import desc, select
+from sqlalchemy import delete, desc, func, select, text
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from apple_deals.crawlers.base import ProductData
@@ -42,3 +44,62 @@ def upsert_if_changed(session: Session, data: ProductData) -> bool:
         return False
     insert_product(session, data)
     return True
+
+
+def _naive_utc_cutoff(retention_days: int) -> datetime:
+    return (datetime.now(tz=UTC) - timedelta(days=retention_days)).replace(tzinfo=None)
+
+
+def prune_old_records(session: Session, retention_days: int = 90) -> int:
+    cutoff = _naive_utc_cutoff(retention_days)
+    result = session.execute(delete(Product).where(Product.crawled_at < cutoff))
+    session.commit()
+    return result.rowcount  # type: ignore[attr-defined,no-any-return]
+
+
+def count_prunable(session: Session, retention_days: int = 90) -> int:
+    cutoff = _naive_utc_cutoff(retention_days)
+    count = session.scalar(
+        select(func.count()).select_from(Product).where(Product.crawled_at < cutoff)
+    )
+    return count or 0
+
+
+def get_db_stats(session: Session, engine: Engine) -> dict:
+    total = session.scalar(select(func.count()).select_from(Product)) or 0
+    oldest = session.scalar(select(func.min(Product.crawled_at)))
+    newest = session.scalar(select(func.max(Product.crawled_at)))
+
+    cutoff_7d = _naive_utc_cutoff(7)
+    recent = (
+        session.scalar(
+            select(func.count()).select_from(Product).where(Product.crawled_at >= cutoff_7d)
+        )
+        or 0
+    )
+    daily_growth = round(recent / 7, 1) if recent else 0.0
+
+    is_postgres = engine.url.drivername.startswith("postgresql")
+    if is_postgres:
+        size_str = (
+            session.scalar(text("SELECT pg_size_pretty(pg_database_size(current_database()))"))
+            or "unknown"
+        )
+    else:
+        db_path = engine.url.database
+        if db_path == ":memory:" or db_path is None:
+            size_str = "in-memory"
+        else:
+            try:
+                size_bytes = os.path.getsize(db_path)
+                size_str = f"{size_bytes / 1024:.1f} KB"
+            except FileNotFoundError:
+                size_str = "unknown"
+
+    return {
+        "total_rows": total,
+        "oldest": oldest,
+        "newest": newest,
+        "daily_growth": daily_growth,
+        "db_size": size_str,
+    }
