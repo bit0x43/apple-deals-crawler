@@ -119,9 +119,21 @@
 **Goal:** Threshold-based price drop detection and Telegram notification on each crawl.
 **Mode:** mvp
 
+**Plans:** 2 plans
+
 **Requirements:**
 - ALRT-01: Telegram message when price drops below threshold
 - ALRT-02: Alert threshold + Telegram credentials configurable via env vars / config
+
+**Plans:**
+- [ ] 05-01-PLAN.md — Alert module core: telegram.py with threshold logic, message formatting, env var config, httpx send; unit tests
+- [ ] 05-02-PLAN.md — Crawl pipeline integration: crud.py enriched return type, crawl() alert wiring, integration tests
+
+**Wave structure:**
+| Wave | Plans | Description |
+|------|-------|-------------|
+| 1 | 05-01 | Alert module core — standalone, unit-testable |
+| 2 | 05-02 | Integration — depends on 05-01 for send_alert function |
 
 **Success Criteria:**
 1. Simulating a price drop below threshold sends a Telegram message to the configured chat
@@ -133,17 +145,29 @@
 ### Phase 6: Automation & Deployment
 **Goal:** Daily GitHub Actions cron, Docker setup, and npx autoskills installation.
 **Mode:** mvp
+**Plans:** 3 plans
 
 **Requirements:**
 - CRAWL-05: GitHub Actions daily cron
 - DEV-05: Docker + docker-compose
 - DEV-06: npx autoskills after stack finalized
 
+**Plans:**
+- [ ] 06-01-PLAN.md — GitHub Actions daily cron workflow (crawl.yml)
+- [ ] 06-02-PLAN.md — Docker + docker-compose setup (Dockerfile, compose, .env.example)
+- [ ] 06-03-PLAN.md — npx autoskills installation + README documentation
+
 **Success Criteria:**
 1. GitHub Actions workflow triggers daily and `apple-deals crawl` runs successfully in CI
 2. `docker-compose up` starts a working environment with no manual steps beyond env vars
 3. npx autoskills is installed and GSD planning skills reflect the final stack
 4. Secrets are passed as GitHub Actions environment secrets (no credentials in repo)
+
+**Wave structure:**
+| Wave | Plans | Description |
+|------|-------|-------------|
+| 1 | 06-01, 06-02 | Infrastructure: CI workflow + Docker files (independent, parallel) |
+| 2 | 06-03 | Finalization: npx install + README (after stack finalized) |
 
 ---
 
@@ -205,4 +229,4 @@
 
 ---
 *Roadmap created: 2026-05-08*
-*Last updated: 2026-05-08 — Phase 3 plans created (2 plans, 2 waves)*
+*Last updated: 2026-05-08 — Phase 6 plans created (3 plans, 2 waves)*

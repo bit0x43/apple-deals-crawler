@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "id": 8100000000001,
+      "title": "Mac mini: Chip M4 Pro de Apple con CPU de 12 nucleos y GPU de 16 nucleos, 512 GB SSD - Plata",
+      "handle": "mac-mini-m4-pro-512gb",
+      "product_type": "Mac mini",
+      "vendor": "Apple",
+      "variants": [
+        {
+          "id": 48000000000001,
+          "sku": "MU4F3LZ/A",
+          "price": "7999000.00",
+          "available": true,
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null
+        }
+      ]
+    },
+    {
+      "id": 8100000000002,
+      "title": "MacBook Pro de 16 pulgadas: Chip M5 Max de Apple con CPU de 18 nucleos y GPU de 32 nucleos, 2 TB SSD - Negro espacial",
+      "handle": "macbook-pro-16-m5-max-2tb",
+      "product_type": "MacBook Pro",
+      "vendor": "Apple",
+      "variants": [
+        {
+          "id": 48000000000002,
+          "sku": "MX9C3LZ/A",
+          "price": "18999000.00",
+          "available": true,
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null
+        }
+      ]
+    }
+  ]
+}

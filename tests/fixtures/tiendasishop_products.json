@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "id": 9167374221620,
+      "title": "Mac mini: Chip M4 de Apple con CPU de 10 nucleos y GPU de 10 nucleos, 512 GB SSD - Plata",
+      "handle": "mac-mini-m4-mu9e3lz-a",
+      "product_type": "Mac mini - M4",
+      "vendor": "Apple",
+      "variants": [
+        {
+          "id": 48331489116468,
+          "sku": "MU9E3LZ/A",
+          "price": "4699000.00",
+          "available": true,
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null
+        }
+      ]
+    },
+    {
+      "id": 9234567890123,
+      "title": "MacBook Air de 13 pulgadas: Chip M5 de Apple con CPU de 10 nucleos y GPU de 8 nucleos, 512 GB SSD - Azul cielo",
+      "handle": "macbook-air-13-m5-sky-blue",
+      "product_type": "MacBook Air - M5",
+      "vendor": "Apple",
+      "variants": [
+        {
+          "id": 48331489116469,
+          "sku": "MXCQ3LZ/A",
+          "price": "5999000.00",
+          "available": true,
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null
+        }
+      ]
+    }
+  ]
+}
