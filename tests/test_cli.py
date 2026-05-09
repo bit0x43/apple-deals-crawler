@@ -27,11 +27,12 @@ def test_db_help_lists_subcommands() -> None:
     assert "stats" in result.output
 
 
-def test_crawl_stub_exits_one() -> None:
-    """apple-deals crawl exits 1 with stub message."""
+def test_crawl_exits_zero() -> None:
+    """apple-deals crawl exits 0 (crawl command implemented)."""
     result = runner.invoke(app, ["crawl"])
-    assert result.exit_code == 1
-    assert "Command not yet implemented." in result.output
+    assert result.exit_code == 0
+    assert "tiendasishop" in result.output
+    assert "mac-center" in result.output
 
 
 def test_tui_stub_exits_one() -> None:
