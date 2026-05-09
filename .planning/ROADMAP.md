@@ -150,11 +150,15 @@
 ### Phase 7: Documentation
 **Goal:** MkDocs + Material docs site with full user guide, deployed to GitHub Pages.
 **Mode:** mvp
+**Plans:** 1 plan
 
 **Requirements:**
 - DOCS-01: MkDocs + Material theme, deployable to GitHub Pages
 - DOCS-02: Docs cover installation, CLI reference, configuration, self-hosting
 - DOCS-03: GitHub Actions workflow auto-deploys docs on push to main
+
+**Plans:**
+- [ ] 07-01-PLAN.md — MkDocs setup, 5 doc pages, GitHub Actions deploy, build validation
 
 **Success Criteria:**
 1. `mkdocs serve` renders the docs site locally without errors
