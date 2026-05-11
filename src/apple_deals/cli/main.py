@@ -1,3 +1,5 @@
+import logging
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -6,6 +8,8 @@ from apple_deals.crawlers.base import BaseCrawler
 from apple_deals.db.crud import count_prunable, get_db_stats, prune_old_records
 from apple_deals.db.session import engine, get_session, init_db
 from apple_deals.tui.app import run_tui
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(help="Track Apple Mac prices from Colombian retailers.")
 db_app = typer.Typer(help="Database maintenance commands.")
@@ -21,6 +25,7 @@ def main() -> None:
 @app.command()
 def crawl() -> None:
     """Crawl product prices from all configured stores."""
+    from apple_deals.alerts.telegram import send_alert
     from apple_deals.crawlers.mac_center import MacCenterCrawler
     from apple_deals.crawlers.tiendasishop import TiendasishopCrawler
     from apple_deals.db.crud import upsert_if_changed
@@ -31,13 +36,29 @@ def crawl() -> None:
     ]
 
     session = get_session()
+    total_alerts = 0
     try:
         for store_name, crawler in crawlers:
             products = crawler.crawl()
-            inserted = sum(1 for p in products if upsert_if_changed(session, p))
-            typer.echo(f"{store_name}: {len(products)} products found, {inserted} inserted")
+            store_inserted = 0
+            store_alerts = 0
+            for p in products:
+                inserted, old_price = upsert_if_changed(session, p)
+                if inserted:
+                    store_inserted += 1
+                    if old_price is not None and old_price != p["price"]:
+                        if send_alert(p, old_price, p["price"]):
+                            store_alerts += 1
+            total_alerts += store_alerts
+            typer.echo(
+                f"{store_name}: {len(products)} products found, "
+                f"{store_inserted} inserted, {store_alerts} alerts fired"
+            )
     finally:
         session.close()
+
+    if total_alerts == 0:
+        logger.info("No price drops detected this crawl.")
     _auto_prune()
 
 

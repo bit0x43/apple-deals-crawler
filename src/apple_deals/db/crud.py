@@ -38,12 +38,12 @@ def insert_product(session: Session, data: ProductData) -> None:
     session.commit()
 
 
-def upsert_if_changed(session: Session, data: ProductData) -> bool:
+def upsert_if_changed(session: Session, data: ProductData) -> tuple[bool, float | None]:
     last_price = get_last_price(session, data["sku"], data["source"])
     if last_price is not None and round(last_price, 2) == round(data["price"], 2):
-        return False
+        return False, None
     insert_product(session, data)
-    return True
+    return True, last_price
 
 
 def _naive_utc_cutoff(retention_days: int) -> datetime:

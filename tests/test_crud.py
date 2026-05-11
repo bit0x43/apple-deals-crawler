@@ -44,20 +44,30 @@ def test_get_last_price_with_record(session: Session) -> None:
 
 
 def test_insert_new_product(session: Session) -> None:
-    inserted = upsert_if_changed(session, _make_product())
+    inserted, old_price = upsert_if_changed(session, _make_product())
     assert inserted is True
+    assert old_price is None
 
 
 def test_skip_unchanged_price(session: Session) -> None:
     upsert_if_changed(session, _make_product(price=4699000.0))
-    inserted_again = upsert_if_changed(session, _make_product(price=4699000.0))
-    assert inserted_again is False
+    inserted, old_price = upsert_if_changed(session, _make_product(price=4699000.0))
+    assert inserted is False
+    assert old_price is None
 
 
 def test_insert_changed_price(session: Session) -> None:
     upsert_if_changed(session, _make_product(price=4699000.0))
-    inserted = upsert_if_changed(session, _make_product(price=4500000.0))
+    inserted, old_price = upsert_if_changed(session, _make_product(price=4500000.0))
     assert inserted is True
+    assert old_price == pytest.approx(4699000.0)
+
+
+def test_old_price_matches_previous_insert(session: Session) -> None:
+    upsert_if_changed(session, _make_product(price=5000000.0))
+    inserted, old_price = upsert_if_changed(session, _make_product(price=4800000.0))
+    assert inserted is True
+    assert old_price == pytest.approx(5000000.0)
 
 
 def test_deduplication_same_source_different_sku(session: Session) -> None:
