@@ -2,16 +2,16 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-08)
+See: .planning/PROJECT.md (updated 2026-05-11)
 
 **Core value:** Know the moment an Apple Mac drops in price in Colombia — without watching any website manually.
-**Current focus:** All phases complete — v1.0 shipped
+**Current focus:** v1.0 shipped — planning next milestone
 
 ## Current Status
 
-**Milestone:** v1.0 ✅
+**Milestone:** v1.0 ✅ (shipped 2026-05-11)
 **Active phase:** None — milestone complete
-**Last action:** Phase 6 + 7 committed — automation, deployment, and documentation (2026-05-11)
+**Last action:** Phase 8 shipped and milestone v1.0 archived (2026-05-11)
 
 ## Phase Progress
 
@@ -24,11 +24,22 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 | 5 | Telegram Alerts | Complete ✅ |
 | 6 | Automation & Deployment | Complete ✅ |
 | 7 | Documentation | Complete ✅ |
+| 8 | Stock Tracking & RAM Enrichment | Complete ✅ |
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-05-11:
+
+| Category | Item | Status |
+|----------|------|--------|
+| dev setup | npx autoskills installation (DEV-06) | deferred |
 
 ## Notes
 
-- gsd-sdk not installed: agent spawning (researcher, plan-checker, verifier) requires `npx get-shit-done-cc@latest --global`
-- npx autoskills: planned for Phase 6 after stack is finalized
+- gsd-sdk not installed: agent spawning requires `npx get-shit-done-cc@latest --global`
+- npx autoskills (DEV-06): deferred from Phase 6 — requires gsd-sdk global setup
+- TUI has 2 benign mypy errors (attr-defined on App dynamic attrs)
 
 ---
-*Initialized: 2026-05-08*
+
+*Last updated: 2026-05-11 after v1.0 milestone*
