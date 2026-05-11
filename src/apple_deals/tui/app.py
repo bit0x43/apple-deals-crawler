@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast
 
 from rich.table import Table
+from sqlalchemy import select
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -57,9 +58,15 @@ def _memory_gb(val: str | None) -> int:
 class CatalogScreen(Screen):
     """Browse current prices with filterable DataTable and sort-by-price."""
 
+    _sort_column: str | None = None
     _sort_reverse: bool = False
     _price_column_key: str = "price"
     _current_rows: list[Product] = []
+
+    DEFAULT_CSS = """
+.filters { height: auto; layout: horizontal; }
+.filters Select { width: 1fr; }
+"""
 
     def compose(self) -> ComposeResult:
         yield Header(id="catalog-header")
@@ -74,6 +81,24 @@ class CatalogScreen(Screen):
                 STORE_CHOICES,
                 prompt="Store",
                 id="store-filter",
+                value="all",
+            )
+            yield Select(
+                [("All", "all"), ("In Stock", "in_stock"), ("Out of Stock", "out_of_stock")],
+                prompt="Stock",
+                id="stock-filter",
+                value="all",
+            )
+            yield Select(
+                [],
+                prompt="Memory",
+                id="memory-filter",
+                value="all",
+            )
+            yield Select(
+                [],
+                prompt="Storage",
+                id="storage-filter",
                 value="all",
             )
         yield DataTable(id="catalog-table")
@@ -93,6 +118,7 @@ class CatalogScreen(Screen):
             ("Color", "color"),
         )
         self.load_data()
+        self.load_filter_options()
 
     @work(thread=True, exclusive=True)
     async def load_data(self) -> None:
@@ -100,12 +126,26 @@ class CatalogScreen(Screen):
         worker = get_current_worker()
         model_val = self.query_one("#model-filter", Select).value
         store_val = self.query_one("#store-filter", Select).value
+        stock_val = self.query_one("#stock-filter", Select).value
+        memory_val = self.query_one("#memory-filter", Select).value
+        storage_val = self.query_one("#storage-filter", Select).value
+
         model_filter = None if model_val == "all" else str(model_val)
         store_filter = None if store_val == "all" else str(store_val)
+        in_stock_filter = {"in_stock": True, "out_of_stock": False}.get(str(stock_val))
+        memory_filter = None if memory_val == "all" else str(memory_val)
+        storage_filter = None if storage_val == "all" else str(storage_val)
 
         session = get_session()
         try:
-            rows = get_current_prices(session, model_filter=model_filter, store_filter=store_filter)
+            rows = get_current_prices(
+                session,
+                model_filter=model_filter,
+                store_filter=store_filter,
+                in_stock_filter=in_stock_filter,
+                memory_filter=memory_filter,
+                storage_filter=storage_filter,
+            )
         except Exception:
             rows = []
         finally:
@@ -115,15 +155,25 @@ class CatalogScreen(Screen):
             self.app.call_from_thread(self._populate_table, rows)
 
     def _populate_table(self, rows: list[Product]) -> None:
-        """Populate the DataTable sorted by storage → memory → price."""
+        """Populate the DataTable with current sort preserving existing sort state."""
         self._current_rows = rows
-        sorted_rows = sorted(
-            rows,
-            key=lambda p: (_storage_bytes(p.storage), _memory_gb(p.memory), p.price),
-        )
+        if self._sort_column:
+            key_fn = {
+                "price": lambda p: p.price,
+                "memory": lambda p: _memory_gb(p.memory),
+                "storage": lambda p: _storage_bytes(p.storage),
+            }.get(self._sort_column)
+            if key_fn:
+                rows = sorted(rows, key=key_fn, reverse=self._sort_reverse)
+        else:
+            rows = sorted(
+                rows,
+                key=lambda p: (_storage_bytes(p.storage), _memory_gb(p.memory), p.price),
+            )
+
         table = self.query_one("#catalog-table", DataTable)
         table.clear()
-        for p in sorted_rows:
+        for p in rows:
             stock = "\u2705 In Stock" if p.in_stock else "\u274c Out of Stock"
             table.add_row(
                 p.reference,
@@ -136,18 +186,69 @@ class CatalogScreen(Screen):
                 key=str(p.id),
             )
 
+        if self._sort_column:
+            self._apply_sort_to_table()
+
+    @work(thread=True, exclusive=True)
+    async def load_filter_options(self) -> None:
+        """Fetch distinct memory and storage values from DB for filter options."""
+        worker = get_current_worker()
+        session = get_session()
+        try:
+            memories = session.scalars(
+                select(Product.memory).distinct().where(Product.memory.isnot(None))
+            ).all()
+            storages = session.scalars(
+                select(Product.storage).distinct().where(Product.storage.isnot(None))
+            ).all()
+        finally:
+            session.close()
+
+        if not worker.is_cancelled:
+            self.app.call_from_thread(self._set_filter_options, memories, storages)
+
+    def _set_filter_options(self, memories: list[str], storages: list[str]) -> None:
+        """Populate memory and storage Select widgets from queried values."""
+        memory_opts = [("All", "all")] + [(m, m) for m in sorted(set(memories))]
+        storage_opts = [("All", "all")] + [(s, s) for s in sorted(set(storages))]
+
+        self.query_one("#memory-filter", Select).set_options(memory_opts)
+        self.query_one("#storage-filter", Select).set_options(storage_opts)
+        self.query_one("#memory-filter", Select).value = "all"
+        self.query_one("#storage-filter", Select).value = "all"
+
     def on_select_changed(self, event: Select.Changed) -> None:
-        """Re-query data when either filter changes."""
-        if event.select.id in ("model-filter", "store-filter"):
+        """Re-query data when any filter changes."""
+        if event.select.id in (
+            "model-filter",
+            "store-filter",
+            "stock-filter",
+            "memory-filter",
+            "storage-filter",
+        ):
             self.load_data()
 
     def on_data_table_header_selected(self, event: DataTable.HeaderSelected) -> None:
-        """Toggle sort on Price column header click."""
-        if event.column_key.value == self._price_column_key:
-            self._sort_reverse = not self._sort_reverse
-            self.query_one("#catalog-table", DataTable).sort(
-                event.column_key, reverse=self._sort_reverse
-            )
+        """Toggle sort on Price, Memory, or Storage column header click."""
+        col = event.column_key.value
+        if col in ("price", "memory", "storage"):
+            if self._sort_column == col:
+                self._sort_reverse = not self._sort_reverse
+            else:
+                self._sort_column = col
+                self._sort_reverse = False
+            self._apply_sort_to_table()
+
+    def _apply_sort_to_table(self) -> None:
+        """Apply current sort state to the DataTable."""
+        table = self.query_one("#catalog-table", DataTable)
+        col = self._sort_column
+        if col == "memory":
+            table.sort(col, key=_memory_gb, reverse=self._sort_reverse)
+        elif col == "storage":
+            table.sort(col, key=_storage_bytes, reverse=self._sort_reverse)
+        elif col == "price":
+            table.sort(col, key=lambda p: int(p.replace(",", "")), reverse=self._sort_reverse)
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         """Navigate to history view for the selected product."""

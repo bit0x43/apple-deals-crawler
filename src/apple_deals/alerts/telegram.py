@@ -103,6 +103,8 @@ def send_message(text: str) -> bool:
 
 
 def send_alert(data: ProductData, old_price: float, new_price: float) -> bool:
+    if not data.get("in_stock", True):
+        return False
     if not should_alert(old_price, new_price):
         return False
     message = _format_message(data, old_price, new_price)
@@ -110,6 +112,8 @@ def send_alert(data: ProductData, old_price: float, new_price: float) -> bool:
 
 
 def send_high_memory_alert(data: ProductData, memory: str) -> bool:
+    if not data.get("in_stock", True):
+        return False
     memory_gb = max(parse_memory_gb(memory))
     message = (
         f"\U0001f4e1 High-memory alert! {data['reference']} at {data['source']}\n"

@@ -123,6 +123,9 @@ def get_current_prices(
     session: Session,
     model_filter: str | None = None,
     store_filter: str | None = None,
+    in_stock_filter: bool | None = None,
+    memory_filter: str | None = None,
+    storage_filter: str | None = None,
 ) -> list[Product]:
     subq = (
         select(
@@ -147,6 +150,12 @@ def get_current_prices(
         stmt = stmt.where(Product.reference.ilike(f"%{model_filter}%"))
     if store_filter and store_filter != "all":
         stmt = stmt.where(Product.source == store_filter)
+    if in_stock_filter is not None:
+        stmt = stmt.where(Product.in_stock == in_stock_filter)
+    if memory_filter and memory_filter != "all":
+        stmt = stmt.where(Product.memory.ilike(f"%{memory_filter}%"))
+    if storage_filter and storage_filter != "all":
+        stmt = stmt.where(Product.storage.ilike(f"%{storage_filter}%"))
     return list(session.scalars(stmt))
 
 

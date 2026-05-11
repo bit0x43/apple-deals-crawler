@@ -10,6 +10,7 @@ from apple_deals.alerts.telegram import (
     _format_message,
     is_configured,
     send_alert,
+    send_high_memory_alert,
     send_message,
     should_alert,
 )
@@ -265,3 +266,58 @@ def test_high_memory_threshold_config_default() -> None:
     from apple_deals.alerts.telegram import HIGH_MEMORY_THRESHOLD
 
     assert HIGH_MEMORY_THRESHOLD == 24
+
+
+def _make_product_with_stock(price: float, in_stock: bool) -> ProductData:
+    """Create a ProductData with explicit in_stock value."""
+    return ProductData(
+        reference="Mac mini: Chip M4",
+        sku="MU9E3LZ/A",
+        memory="16GB",
+        storage="512 GB",
+        color="Plata",
+        price=price,
+        url="https://co.tiendasishop.com/products/mac-mini-m4",
+        source="tiendas ishop",
+        in_stock=in_stock,
+    )
+
+
+def test_send_alert_suppresses_out_of_stock() -> None:
+    """send_alert returns False when product is out of stock."""
+    with patch("apple_deals.alerts.telegram.send_message") as mock_send:
+        data = _make_product_with_stock(price=900000.0, in_stock=False)
+        result = send_alert(data, 1000000.0, 900000.0)
+
+    assert result is False
+    mock_send.assert_not_called()
+
+
+def test_send_alert_fires_for_in_stock() -> None:
+    """send_alert works normally when product is in stock."""
+    with patch("apple_deals.alerts.telegram.send_message", return_value=True) as mock_send:
+        data = _make_product_with_stock(price=900000.0, in_stock=True)
+        result = send_alert(data, 1000000.0, 900000.0)
+
+    assert result is True
+    mock_send.assert_called_once()
+
+
+def test_send_high_memory_alert_suppresses_out_of_stock() -> None:
+    """send_high_memory_alert returns False when product is out of stock."""
+    with patch("apple_deals.alerts.telegram.send_message") as mock_send:
+        data = _make_product_with_stock(price=5_000_000.0, in_stock=False)
+        result = send_high_memory_alert(data, "24GB")
+
+    assert result is False
+    mock_send.assert_not_called()
+
+
+def test_send_high_memory_alert_fires_for_in_stock() -> None:
+    """send_high_memory_alert works normally when product is in stock."""
+    with patch("apple_deals.alerts.telegram.send_message", return_value=True) as mock_send:
+        data = _make_product_with_stock(price=5_000_000.0, in_stock=True)
+        result = send_high_memory_alert(data, "24GB")
+
+    assert result is True
+    mock_send.assert_called_once()

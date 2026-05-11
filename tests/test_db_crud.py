@@ -113,17 +113,21 @@ def _seed(
     price: float = 4_999_000.0,
     source: str = "tiendas ishop",
     days_ago: int = 0,
+    in_stock: bool = True,
+    memory: str | None = None,
+    storage: str | None = "512 GB",
 ) -> Product:
     crawled_at = (datetime.now(tz=UTC) - timedelta(days=days_ago)).replace(tzinfo=None)
     p = Product(
         reference=reference,
         sku=sku,
-        memory=None,
-        storage="512 GB",
+        memory=memory,
+        storage=storage,
         color="Plata",
         price=price,
         url="https://example.com/mba",
         source=source,
+        in_stock=in_stock,
         crawled_at=crawled_at,
     )
     session.add(p)
@@ -200,3 +204,61 @@ def test_get_price_history_rolling_window(tui_session: Session) -> None:
 
 def test_get_price_history_empty_table(tui_session: Session) -> None:
     assert get_price_history(tui_session, "SKU001", "tiendas ishop") == []
+
+
+# --- New filter params tests ---
+
+
+def test_get_current_prices_filters_by_in_stock(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001", in_stock=True)
+    _seed(tui_session, sku="SKU002", in_stock=False)
+    result = get_current_prices(tui_session, in_stock_filter=True)
+    assert len(result) == 1
+    assert result[0].sku == "SKU001"
+    assert result[0].in_stock is True
+
+
+def test_get_current_prices_filters_by_out_of_stock(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001", in_stock=True)
+    _seed(tui_session, sku="SKU002", in_stock=False)
+    result = get_current_prices(tui_session, in_stock_filter=False)
+    assert len(result) == 1
+    assert result[0].sku == "SKU002"
+    assert result[0].in_stock is False
+
+
+def test_get_current_prices_filters_by_memory(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001", memory="16GB")
+    _seed(tui_session, sku="SKU002", memory="32GB")
+    result = get_current_prices(tui_session, memory_filter="16GB")
+    assert len(result) == 1
+    assert result[0].sku == "SKU001"
+
+
+def test_get_current_prices_filters_by_storage(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001", storage="256GB")
+    _seed(tui_session, sku="SKU002", storage="512GB")
+    result = get_current_prices(tui_session, storage_filter="512GB")
+    assert len(result) == 1
+    assert result[0].sku == "SKU002"
+
+
+def test_get_current_prices_all_filters_combined(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001", memory="16GB", storage="256GB", in_stock=True)
+    _seed(tui_session, sku="SKU002", memory="32GB", storage="512GB", in_stock=True)
+    _seed(tui_session, sku="SKU003", memory="16GB", storage="256GB", in_stock=False)
+    result = get_current_prices(
+        tui_session,
+        in_stock_filter=True,
+        memory_filter="16GB",
+        storage_filter="256GB",
+    )
+    assert len(result) == 1
+    assert result[0].sku == "SKU001"
+
+
+def test_get_current_prices_no_filter_params_returns_all(tui_session: Session) -> None:
+    _seed(tui_session, sku="SKU001")
+    _seed(tui_session, sku="SKU002")
+    result = get_current_prices(tui_session)
+    assert len(result) == 2

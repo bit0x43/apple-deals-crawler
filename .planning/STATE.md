@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-05-11)
 
 **Core value:** Know the moment an Apple Mac drops in price in Colombia — without watching any website manually.
-**Current focus:** v1.0 shipped — planning next milestone
+**Current focus:** v1.1 — Alert Quality
 
 ## Current Status
 
-**Milestone:** v1.0 ✅ (shipped 2026-05-11)
+**Milestone:** v1.1 ✅ — Alert Quality (shipped 2026-05-12)
 **Active phase:** None — milestone complete
-**Last action:** Phase 9 shipped — PR #2 (2026-05-11)
+**Last action:** Phase 11 shipped — Alert Noise Filtering (2026-05-12)
 
 ## Phase Progress
 
@@ -26,6 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-11)
 | 7 | Documentation | Complete ✅ |
 | 8 | Stock Tracking & RAM Enrichment | Complete ✅ |
 | 9 | Data Quality & Bug Fixes | Complete ✅ |
+| 10 | TUI Filters & Ordering | Complete ✅ |
+| 11 | Alert Noise Filtering | Complete ✅ |
 
 ## Deferred Items
 
@@ -43,4 +45,4 @@ Items acknowledged and deferred at milestone close on 2026-05-11:
 
 ---
 
-*Last updated: 2026-05-11 after v1.0 milestone*
+*Last updated: 2026-05-12 — v1.1 Alert Quality shipped*
