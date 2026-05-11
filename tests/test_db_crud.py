@@ -111,7 +111,7 @@ def _seed(
     reference: str = "MacBook Air 13 M4",
     sku: str = "MXD33LL/A",
     price: float = 4_999_000.0,
-    source: str = "tiendasishop",
+    source: str = "tiendas ishop",
     days_ago: int = 0,
 ) -> Product:
     crawled_at = (datetime.now(tz=UTC) - timedelta(days=days_ago)).replace(tzinfo=None)
@@ -152,7 +152,7 @@ def test_get_current_prices_filters_by_model(tui_session: Session) -> None:
 
 
 def test_get_current_prices_filters_by_store(tui_session: Session) -> None:
-    _seed(tui_session, source="tiendasishop", sku="SKU001")
+    _seed(tui_session, source="tiendas ishop", sku="SKU001")
     _seed(tui_session, source="mac-center", sku="SKU002")
     result = get_current_prices(tui_session, store_filter="mac-center")
     assert len(result) == 1
@@ -176,27 +176,27 @@ def test_get_price_history_returns_ordered_by_crawled_at(
     _seed(tui_session, sku="SKU001", days_ago=10)
     _seed(tui_session, sku="SKU001", price=3_000_000.0, days_ago=5)
     _seed(tui_session, sku="SKU001", price=2_500_000.0, days_ago=1)
-    result = get_price_history(tui_session, "SKU001", "tiendasishop")
+    result = get_price_history(tui_session, "SKU001", "tiendas ishop")
     assert len(result) == 3
     assert result[0].crawled_at <= result[1].crawled_at <= result[2].crawled_at
 
 
 def test_get_price_history_filters_by_sku_and_source(tui_session: Session) -> None:
-    _seed(tui_session, sku="SKU001", source="tiendasishop")
-    _seed(tui_session, sku="SKU002", source="tiendasishop")
+    _seed(tui_session, sku="SKU001", source="tiendas ishop")
+    _seed(tui_session, sku="SKU002", source="tiendas ishop")
     _seed(tui_session, sku="SKU001", source="mac-center")
-    result = get_price_history(tui_session, "SKU001", "tiendasishop")
+    result = get_price_history(tui_session, "SKU001", "tiendas ishop")
     assert len(result) == 1
     assert result[0].sku == "SKU001"
-    assert result[0].source == "tiendasishop"
+    assert result[0].source == "tiendas ishop"
 
 
 def test_get_price_history_rolling_window(tui_session: Session) -> None:
     _seed(tui_session, sku="SKU001", days_ago=10)
     _seed(tui_session, sku="SKU001", price=3_000_000.0, days_ago=200)
-    result = get_price_history(tui_session, "SKU001", "tiendasishop", days=90)
+    result = get_price_history(tui_session, "SKU001", "tiendas ishop", days=90)
     assert len(result) == 1
 
 
 def test_get_price_history_empty_table(tui_session: Session) -> None:
-    assert get_price_history(tui_session, "SKU001", "tiendasishop") == []
+    assert get_price_history(tui_session, "SKU001", "tiendas ishop") == []

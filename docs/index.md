@@ -23,7 +23,7 @@ uv run apple-deals tui
 
 | Store | URL |
 |-------|-----|
-| TiendaShoP | co.tiendasishop.com |
+| Tiendas iShop | co.tiendasishop.com |
 | Mac Center | mac-center.com |
 
 ## Next Steps

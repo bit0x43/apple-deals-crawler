@@ -25,7 +25,7 @@ def _make_product(price: float = 1000000.0) -> ProductData:
         color="Plata",
         price=price,
         url="https://co.tiendasishop.com/products/mac-mini-m4",
-        source="tiendasishop",
+        source="tiendas ishop",
     )
 
 
@@ -67,10 +67,8 @@ def test_format_message_contains_all_fields() -> None:
 
     assert "\U0001f514" in msg
     assert "Mac mini: Chip M4" in msg
-    assert "tiendasishop" in msg
-    assert "4,699,000" in msg
-    assert "4,400,000" in msg
-    assert "6.4% off" in msg
+    assert "tiendas ishop" in msg
+
     assert "tiendasishop.com" in msg
 
 

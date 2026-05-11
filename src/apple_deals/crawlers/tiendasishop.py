@@ -12,7 +12,7 @@ from apple_deals.crawlers.base import (
 )
 
 BASE_URL = "https://co.tiendasishop.com"
-SOURCE = "tiendasishop"
+SOURCE = "tiendas ishop"
 
 MAC_COLLECTIONS: list[str] = [
     "apl-ps-13-inch-macbook-neo",
@@ -53,7 +53,7 @@ class TiendasishopCrawler(BaseCrawler):
         response = ctx.get(url)
         if not response.ok:
             print(
-                f"[tiendasishop] WARNING: {handle} returned {response.status}",
+                f"[tiendas ishop] WARNING: {handle} returned {response.status}",
                 file=sys.stderr,
             )
             return []

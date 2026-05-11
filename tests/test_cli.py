@@ -31,7 +31,7 @@ def test_crawl_exits_zero() -> None:
     """apple-deals crawl exits 0 (crawl command implemented)."""
     result = runner.invoke(app, ["crawl"])
     assert result.exit_code == 0
-    assert "tiendasishop" in result.output
+    assert "tiendas ishop" in result.output
     assert "mac-center" in result.output
 
 

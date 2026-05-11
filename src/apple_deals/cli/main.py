@@ -31,7 +31,7 @@ def crawl() -> None:
     from apple_deals.db.crud import upsert_if_changed
 
     crawlers: list[tuple[str, BaseCrawler]] = [
-        ("tiendasishop", TiendasishopCrawler()),
+        ("tiendas ishop", TiendasishopCrawler()),
         ("mac-center", MacCenterCrawler()),
     ]
 

@@ -23,7 +23,7 @@ MODEL_CHOICES = [
 
 STORE_CHOICES = [
     ("All", "all"),
-    ("Tiendasishop", "tiendasishop"),
+    ("Tiendas iShop", "tiendas ishop"),
     ("Mac Center", "mac-center"),
 ]
 
