@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from rich.table import Table
 from textual import work
 from textual.app import App, ComposeResult
@@ -28,11 +30,35 @@ STORE_CHOICES = [
 ]
 
 
+def _storage_bytes(val: str | None) -> int:
+    """Convert storage string like '512 GB' or '1 TB' to byte count for sorting."""
+    if not val:
+        return 0
+    parts = val.split()
+    if len(parts) != 2:
+        return 0
+    try:
+        num = int(parts[0])
+    except ValueError:
+        return 0
+    return num * 1024 if parts[1].upper() == "TB" else num
+
+
+def _memory_gb(val: str | None) -> int:
+    """Extract max GB from memory string like '16GB' or '16GB, 24GB'."""
+    if not val:
+        return 0
+    import re
+
+    nums = re.findall(r"(\d+)", val)
+    return max(int(n) for n in nums) if nums else 0
+
+
 class CatalogScreen(Screen):
     """Browse current prices with filterable DataTable and sort-by-price."""
 
     _sort_reverse: bool = False
-    _price_column_key: str = "Price (COP)"
+    _price_column_key: str = "price"
     _current_rows: list[Product] = []
 
     def compose(self) -> ComposeResult:
@@ -57,7 +83,15 @@ class CatalogScreen(Screen):
         table = self.query_one("#catalog-table", DataTable)
         table.cursor_type = "row"
         table.zebra_stripes = True
-        table.add_columns("Model", "Store", "Price (COP)", "Stock", "Memory", "Storage", "Color")
+        table.add_columns(
+            ("Model", "model"),
+            ("Store", "store"),
+            ("Price (COP)", self._price_column_key),
+            ("Stock", "stock"),
+            ("Memory", "memory"),
+            ("Storage", "storage"),
+            ("Color", "color"),
+        )
         self.load_data()
 
     @work(thread=True, exclusive=True)
@@ -72,6 +106,8 @@ class CatalogScreen(Screen):
         session = get_session()
         try:
             rows = get_current_prices(session, model_filter=model_filter, store_filter=store_filter)
+        except Exception:
+            rows = []
         finally:
             session.close()
 
@@ -79,11 +115,15 @@ class CatalogScreen(Screen):
             self.app.call_from_thread(self._populate_table, rows)
 
     def _populate_table(self, rows: list[Product]) -> None:
-        """Populate the DataTable with price rows, then sort default by price ASC."""
+        """Populate the DataTable sorted by storage → memory → price."""
         self._current_rows = rows
+        sorted_rows = sorted(
+            rows,
+            key=lambda p: (_storage_bytes(p.storage), _memory_gb(p.memory), p.price),
+        )
         table = self.query_one("#catalog-table", DataTable)
         table.clear()
-        for p in rows:
+        for p in sorted_rows:
             stock = "\u2705 In Stock" if p.in_stock else "\u274c Out of Stock"
             table.add_row(
                 p.reference,
@@ -95,7 +135,6 @@ class CatalogScreen(Screen):
                 p.color or "\u2014",
                 key=str(p.id),
             )
-        table.sort(self._price_column_key)
 
     def on_select_changed(self, event: Select.Changed) -> None:
         """Re-query data when either filter changes."""
@@ -104,7 +143,7 @@ class CatalogScreen(Screen):
 
     def on_data_table_header_selected(self, event: DataTable.HeaderSelected) -> None:
         """Toggle sort on Price column header click."""
-        if str(event.column_key.value) == self._price_column_key:
+        if event.column_key.value == self._price_column_key:
             self._sort_reverse = not self._sort_reverse
             self.query_one("#catalog-table", DataTable).sort(
                 event.column_key, reverse=self._sort_reverse
@@ -120,9 +159,9 @@ class CatalogScreen(Screen):
             return
         product = next((p for p in self._current_rows if p.id == product_id), None)
         if product is not None:
-            app = self.app
-            app.selected_product = (product.sku, product.source, product.reference)
-            app.switch_screen("history")
+            api = cast(AppleDealsApp, self.app)
+            api.selected_product = (product.sku, product.source, product.reference)
+            api.switch_screen("history")
 
 
 class HistoryScreen(Screen):
@@ -154,6 +193,8 @@ class HistoryScreen(Screen):
         session = get_session()
         try:
             records = get_price_history(session, sku=sku, source=source, days=90)
+        except Exception:
+            records = []
         finally:
             session.close()
 
@@ -212,7 +253,7 @@ class AppleDealsApp(App):
 
     def action_switch_focus(self) -> None:
         """Toggle between catalog and history screens."""
-        current = self.current_screen
+        current = self.screen
         if isinstance(current, CatalogScreen):
             self.switch_screen("history")
         elif isinstance(current, HistoryScreen):

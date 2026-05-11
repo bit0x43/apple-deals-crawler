@@ -44,7 +44,12 @@ def crawl() -> None:
     total_high_memory = 0
     try:
         for store_name, crawler in crawlers:
-            products = crawler.crawl()
+            try:
+                products = crawler.crawl()
+            except Exception:
+                logger.warning("%s crawl failed", store_name, exc_info=True)
+                typer.echo(f"{store_name}: crawl failed, skipping.")
+                continue
             before = len(products)
 
             products = enrich_memory(products, store_name)
@@ -98,7 +103,11 @@ def _auto_prune() -> None:
 @app.command()
 def tui() -> None:
     """Open the interactive terminal UI."""
-    run_tui()
+    try:
+        run_tui()
+    except Exception:
+        logger.exception("TUI crashed")
+        raise typer.Exit(code=1)
 
 
 @db_app.command("clean")
@@ -117,6 +126,9 @@ def db_clean(
         else:
             deleted = prune_old_records(session, retention_days=days)
             typer.echo(f"Deleted {deleted} rows older than {days} days.")
+    except Exception:
+        logger.exception("Failed to prune records")
+        raise typer.Exit(code=1)
     finally:
         session.close()
 
@@ -127,6 +139,9 @@ def db_stats() -> None:
     session = get_session()
     try:
         stats = get_db_stats(session, engine)
+    except Exception:
+        logger.exception("Failed to retrieve DB stats")
+        raise typer.Exit(code=1)
     finally:
         session.close()
 

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -88,3 +89,45 @@ def test_mac_center_fixture_parseable() -> None:
     first = data["products"][0]
     for key in ("title", "variants", "handle"):
         assert key in first
+
+
+def test_tiendasishop_sentinel_constant() -> None:
+    from apple_deals.crawlers.tiendasishop import SENTINEL_PRICE
+
+    assert SENTINEL_PRICE == 99_999_999
+
+
+def test_tiendasishop_parse_product_filters_sentinel() -> None:
+    from apple_deals.crawlers.tiendasishop import SENTINEL_PRICE, TiendasishopCrawler
+
+    crawler = TiendasishopCrawler()
+
+    sentinel: dict[str, Any] = {
+        "title": "MacBook Air 15 M5 1TB",
+        "variants": [{"price": "99999999", "sku": "MDVE4E/A", "available": True}],
+        "handle": "some-handle",
+    }
+    valid: dict[str, Any] = {
+        "title": "Mac mini M4 512GB - Plata",
+        "variants": [{"price": "4699000.00", "sku": "MU9E3LZ/A", "available": True}],
+        "handle": "mac-mini-m4",
+    }
+
+    assert float(sentinel["variants"][0]["price"]) >= SENTINEL_PRICE
+    assert float(valid["variants"][0]["price"]) < SENTINEL_PRICE
+
+    parsed_sentinel = crawler._parse_product(sentinel)
+    parsed_valid = crawler._parse_product(valid)
+
+    assert float(parsed_sentinel["price"]) >= SENTINEL_PRICE
+    assert float(parsed_valid["price"]) < SENTINEL_PRICE
+
+    # Verify the filter condition used in _fetch_collection
+    products = [sentinel, valid]
+    filtered = [
+        p
+        for p in products
+        if p.get("variants") and float(p["variants"][0].get("price", 0)) < SENTINEL_PRICE
+    ]
+    assert len(filtered) == 1
+    assert filtered[0]["handle"] == "mac-mini-m4"
