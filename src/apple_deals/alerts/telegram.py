@@ -13,10 +13,12 @@ TELEGRAM_BOT_TOKEN: str | None = None
 TELEGRAM_CHAT_ID: str | None = None
 ALERT_THRESHOLD_PCT: float = 0.05
 ALERT_THRESHOLD_ABS: float | None = None
+HIGH_MEMORY_THRESHOLD: int = 24
 
 
 def _init_from_env() -> None:
-    global TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ALERT_THRESHOLD_PCT, ALERT_THRESHOLD_ABS
+    global TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ALERT_THRESHOLD_PCT
+    global ALERT_THRESHOLD_ABS, HIGH_MEMORY_THRESHOLD
 
     TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip() or None
     TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip() or None
@@ -31,6 +33,12 @@ def _init_from_env() -> None:
         ALERT_THRESHOLD_ABS = float(raw_abs) if raw_abs else None
     except (TypeError, ValueError):
         ALERT_THRESHOLD_ABS = None
+
+    try:
+        raw_high = os.getenv("HIGH_MEMORY_THRESHOLD", "").strip()
+        HIGH_MEMORY_THRESHOLD = int(raw_high) if raw_high else 24
+    except (TypeError, ValueError):
+        HIGH_MEMORY_THRESHOLD = 24
 
 
 _init_from_env()
@@ -99,3 +107,21 @@ def send_alert(data: ProductData, old_price: float, new_price: float) -> bool:
         return False
     message = _format_message(data, old_price, new_price)
     return send_message(message)
+
+
+def send_high_memory_alert(data: ProductData, memory: str) -> bool:
+    memory_gb = max(parse_memory_gb(memory))
+    message = (
+        f"\U0001f4e1 High-memory alert! {data['reference']} at {data['source']}\n"
+        f"Memory: {memory} ({memory_gb} GB)\n"
+        f"Price: {_format_cop(data['price'])} COP\n"
+        f"{data['url']}"
+    )
+    return send_message(message)
+
+
+def parse_memory_gb(memory: str) -> list[int]:
+    """Extract numeric GB values from a memory string like '16GB, 24GB'."""
+    import re
+
+    return [int(m) for m in re.findall(r"(\d+)\s*GB", memory.upper())]

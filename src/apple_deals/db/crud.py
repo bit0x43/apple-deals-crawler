@@ -32,6 +32,7 @@ def insert_product(session: Session, data: ProductData) -> None:
         price=data["price"],
         url=data["url"],
         source=data["source"],
+        in_stock=data.get("in_stock", True),
         crawled_at=datetime.now(tz=UTC),
     )
     session.add(record)
@@ -39,9 +40,22 @@ def insert_product(session: Session, data: ProductData) -> None:
 
 
 def upsert_if_changed(session: Session, data: ProductData) -> tuple[bool, float | None]:
-    last_price = get_last_price(session, data["sku"], data["source"])
-    if last_price is not None and round(last_price, 2) == round(data["price"], 2):
-        return False, None
+    stmt = (
+        select(Product.price, Product.in_stock)
+        .where(Product.sku == data["sku"], Product.source == data["source"])
+        .order_by(desc(Product.crawled_at))
+        .limit(1)
+    )
+    result = session.execute(stmt).one_or_none()
+
+    if result is not None:
+        last_price = float(result.price)
+        last_in_stock = bool(result.in_stock)
+        if round(last_price, 2) == round(data["price"], 2) and last_in_stock == data["in_stock"]:
+            return False, None
+    else:
+        last_price = None
+
     insert_product(session, data)
     return True, last_price
 

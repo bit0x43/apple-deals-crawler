@@ -57,7 +57,7 @@ class CatalogScreen(Screen):
         table = self.query_one("#catalog-table", DataTable)
         table.cursor_type = "row"
         table.zebra_stripes = True
-        table.add_columns("Model", "Store", "Price (COP)", "Memory", "Storage", "Color")
+        table.add_columns("Model", "Store", "Price (COP)", "Stock", "Memory", "Storage", "Color")
         self.load_data()
 
     @work(thread=True, exclusive=True)
@@ -84,10 +84,12 @@ class CatalogScreen(Screen):
         table = self.query_one("#catalog-table", DataTable)
         table.clear()
         for p in rows:
+            stock = "\u2705 In Stock" if p.in_stock else "\u274c Out of Stock"
             table.add_row(
                 p.reference,
                 p.source,
                 f"{p.price:,.0f}",
+                stock,
                 p.memory or "\u2014",
                 p.storage or "\u2014",
                 p.color or "\u2014",

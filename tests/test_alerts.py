@@ -16,16 +16,17 @@ from apple_deals.alerts.telegram import (
 from apple_deals.crawlers.base import ProductData
 
 
-def _make_product(price: float = 1000000.0) -> ProductData:
+def _make_product(price: float = 1000000.0, memory: str | None = None) -> ProductData:
     return ProductData(
         reference="Mac mini: Chip M4",
         sku="MU9E3LZ/A",
-        memory=None,
+        memory=memory,
         storage="512 GB",
         color="Plata",
         price=price,
         url="https://co.tiendasishop.com/products/mac-mini-m4",
         source="tiendas ishop",
+        in_stock=True,
     )
 
 
@@ -224,3 +225,43 @@ def test_alert_pipeline_new_product_no_alert() -> None:
         result = send_alert(data, 1000000.0, 1000000.0)
         assert result is False
         mock_send.assert_not_called()
+
+
+def test_parse_memory_gb_single() -> None:
+    from apple_deals.alerts.telegram import parse_memory_gb
+
+    assert parse_memory_gb("16GB") == [16]
+
+
+def test_parse_memory_gb_multiple() -> None:
+    from apple_deals.alerts.telegram import parse_memory_gb
+
+    assert parse_memory_gb("16GB, 24GB") == [16, 24]
+
+
+def test_parse_memory_gb_no_match() -> None:
+    from apple_deals.alerts.telegram import parse_memory_gb
+
+    assert parse_memory_gb("No memory info") == []
+
+
+def test_send_high_memory_alert_sends_message() -> None:
+    from apple_deals.alerts.telegram import send_high_memory_alert
+
+    data = _make_product(price=5_000_000.0, memory="24GB")
+    with patch("apple_deals.alerts.telegram.send_message", return_value=True) as mock_send:
+        result = send_high_memory_alert(data, "24GB")
+
+    assert result is True
+    mock_send.assert_called_once()
+    call_arg = mock_send.call_args[0][0]
+    assert "High-memory alert" in call_arg
+    assert "Mac mini: Chip M4" in call_arg
+    assert "24GB" in call_arg
+
+
+def test_high_memory_threshold_config_default() -> None:
+    """HIGH_MEMORY_THRESHOLD defaults to 24."""
+    from apple_deals.alerts.telegram import HIGH_MEMORY_THRESHOLD
+
+    assert HIGH_MEMORY_THRESHOLD == 24
