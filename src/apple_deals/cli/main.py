@@ -5,6 +5,7 @@ from rich.table import Table
 from apple_deals.crawlers.base import BaseCrawler
 from apple_deals.db.crud import count_prunable, get_db_stats, prune_old_records
 from apple_deals.db.session import engine, get_session, init_db
+from apple_deals.tui.app import run_tui
 
 app = typer.Typer(help="Track Apple Mac prices from Colombian retailers.")
 db_app = typer.Typer(help="Database maintenance commands.")
@@ -54,8 +55,7 @@ def _auto_prune() -> None:
 @app.command()
 def tui() -> None:
     """Open the interactive terminal UI."""
-    typer.echo("Command not yet implemented.")
-    raise typer.Exit(1)
+    run_tui()
 
 
 @db_app.command("clean")

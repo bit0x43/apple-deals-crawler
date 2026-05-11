@@ -103,3 +103,52 @@ def get_db_stats(session: Session, engine: Engine) -> dict:
         "daily_growth": daily_growth,
         "db_size": size_str,
     }
+
+
+def get_current_prices(
+    session: Session,
+    model_filter: str | None = None,
+    store_filter: str | None = None,
+) -> list[Product]:
+    subq = (
+        select(
+            Product.sku,
+            Product.source,
+            func.max(Product.crawled_at).label("max_crawled_at"),
+        )
+        .group_by(Product.sku, Product.source)
+        .subquery()
+    )
+    stmt = (
+        select(Product)
+        .join(
+            subq,
+            (Product.sku == subq.c.sku)
+            & (Product.source == subq.c.source)
+            & (Product.crawled_at == subq.c.max_crawled_at),
+        )
+        .order_by(Product.price)
+    )
+    if model_filter and model_filter != "all":
+        stmt = stmt.where(Product.reference.ilike(f"%{model_filter}%"))
+    if store_filter and store_filter != "all":
+        stmt = stmt.where(Product.source == store_filter)
+    return list(session.scalars(stmt))
+
+
+def get_price_history(
+    session: Session,
+    sku: str,
+    source: str,
+    days: int = 90,
+) -> list[Product]:
+    stmt = (
+        select(Product)
+        .where(Product.sku == sku)
+        .where(Product.source == source)
+        .order_by(Product.crawled_at)
+    )
+    if days > 0:
+        cutoff = (datetime.now(tz=UTC) - timedelta(days=days)).replace(tzinfo=None)
+        stmt = stmt.where(Product.crawled_at >= cutoff)
+    return list(session.scalars(stmt))

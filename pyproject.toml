@@ -5,9 +5,10 @@ description = "Track daily Apple Mac prices from Colombian retailers"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "playwright>=1.59.0",
-    "rich>=15.0.0",
+    "playwright",
+    "rich",
     "sqlalchemy>=2.0.49",
+    "textual>=0.89",
     "typer>=0.25.1",
 ]
 

@@ -35,11 +35,14 @@ def test_crawl_exits_zero() -> None:
     assert "mac-center" in result.output
 
 
-def test_tui_stub_exits_one() -> None:
-    """apple-deals tui exits 1 with stub message."""
-    result = runner.invoke(app, ["tui"])
-    assert result.exit_code == 1
-    assert "Command not yet implemented." in result.output
+def test_tui_command_wired() -> None:
+    """apple-deals tui command is recognized and run_tui is importable."""
+    from apple_deals.tui.app import run_tui
+
+    assert callable(run_tui)
+    result = runner.invoke(app, ["tui", "--help"])
+    assert result.exit_code == 0
+    assert "interactive terminal ui" in result.output.lower()
 
 
 def test_db_clean_dry_run_reports_without_deleting() -> None:
