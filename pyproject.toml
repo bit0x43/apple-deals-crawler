@@ -30,11 +30,13 @@ packages = ["src/apple_deals"]
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.6.0",
-    "ruff>=0.15.12",
-    "mypy>=2.0.0",
     "detect-secrets>=1.5.0",
+    "mkdocs-material>=9.7.6",
+    "mkdocs-typer2[mkdocs]>=0.3.0",
+    "mypy>=2.0.0",
+    "pre-commit>=4.6.0",
     "pytest>=9.0.3",
+    "ruff>=0.15.12",
     "sqlalchemy[mypy]>=2.0.49",
 ]
 

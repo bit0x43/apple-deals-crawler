@@ -5,26 +5,25 @@
 See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** Know the moment an Apple Mac drops in price in Colombia — without watching any website manually.
-**Current focus:** Phase 1 — Project Foundation
+**Current focus:** All phases complete — v1.0 shipped
 
 ## Current Status
 
-**Milestone:** v1.0
-**Active phase:** Phase 2 — Crawling Core
-**Last action:** Phase 1 complete — verification passed 11/11 (2026-05-08)
-**Resume file:** .planning/phases/02-crawling-core/
+**Milestone:** v1.0 ✅
+**Active phase:** None — milestone complete
+**Last action:** Phase 6 + 7 committed — automation, deployment, and documentation (2026-05-11)
 
 ## Phase Progress
 
 | # | Phase | Status |
 |---|-------|--------|
 | 1 | Project Foundation | Complete ✅ |
-| 2 | Crawling Core | Not started |
-| 3 | Database & Maintenance | Not started |
-| 4 | TUI | Not started |
-| 5 | Telegram Alerts | Not started |
-| 6 | Automation & Deployment | Not started |
-| 7 | Documentation | Not started |
+| 2 | Crawling Core | Complete ✅ |
+| 3 | Database & Maintenance | Complete ✅ |
+| 4 | TUI | Complete ✅ |
+| 5 | Telegram Alerts | Complete ✅ |
+| 6 | Automation & Deployment | Complete ✅ |
+| 7 | Documentation | Complete ✅ |
 
 ## Notes
 

@@ -12,12 +12,12 @@
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
 | 1 | ~~Project Foundation~~ ✅ | Repo + tooling + DB models + CLI skeleton | DEV-01..04, DB-01, CLI-03 | 6 | 4 |
-| 2 | Crawling Core | Working crawlers with change-only storage | CRAWL-01..04, CLI-01 | 5 | 4 |
-| 3 | Database & Maintenance | Postgres support + pruner + maintenance CLI | DB-02..05 | 4 | 4 |
-| 4 | TUI | Interactive catalog + history views | TUI-01..04, CLI-02 | 5 | 5 |
-| 5 | Telegram Alerts | Threshold-based price drop notifications | ALRT-01..02 | 2 | 3 |
-| 6 | Automation & Deployment | GitHub Actions cron + Docker | CRAWL-05, DEV-05..06 | 3 | 4 |
-| 7 | Documentation | MkDocs docs site on GitHub Pages | DOCS-01..03 | 3 | 3 |
+| 2 | ~~Crawling Core~~ ✅ | Working crawlers with change-only storage | CRAWL-01..04, CLI-01 | 5 | 4 |
+| 3 | ~~Database & Maintenance~~ ✅ | Postgres support + pruner + maintenance CLI | DB-02..05 | 4 | 4 |
+| 4 | ~~TUI~~ ✅ | Interactive catalog + history views | TUI-01..04, CLI-02 | 5 | 5 |
+| 5 | ~~Telegram Alerts~~ ✅ | Threshold-based price drop notifications | ALRT-01..02 | 2 | 3 |
+| 6 | ~~Automation & Deployment~~ ✅ | GitHub Actions cron + Docker | CRAWL-05, DEV-05..06 | 3 | 4 |
+| 7 | ~~Documentation~~ ✅ | MkDocs docs site on GitHub Pages | DOCS-01..03 | 3 | 3 |
 
 ---
 
@@ -35,9 +35,9 @@
 - CLI-03: --help for all commands
 
 **Plans:**
-- [ ] 01-01-PLAN.md — Project scaffold: pyproject.toml, package tree, .python-version, .gitignore
-- [ ] 01-02-PLAN.md — DB models + session + CLI entrypoint + tests (Walking Skeleton)
-- [ ] 01-03-PLAN.md — Pre-commit hooks, secrets baseline, validate all hooks pass
+- [x] 01-01-PLAN.md — Project scaffold: pyproject.toml, package tree, .python-version, .gitignore
+- [x] 01-02-PLAN.md — DB models + session + CLI entrypoint + tests (Walking Skeleton)
+- [x] 01-03-PLAN.md — Pre-commit hooks, secrets baseline, validate all hooks pass
 
 **Success Criteria:**
 1. `pre-commit run --all-files` passes on a clean checkout
@@ -60,9 +60,9 @@
 - CLI-01: `apple-deals crawl` command
 
 **Plans:**
-- [ ] 02-01-PLAN.md — ProductData TypedDict + BaseCrawler ABC + parse_title() + JSON fixtures + unit tests
-- [ ] 02-02-PLAN.md — TiendasishopCrawler + MacCenterCrawler + db/crud.py + deduplication unit tests
-- [ ] 02-03-PLAN.md — CLI crawl command wiring + playwright dependency + live crawl verification
+- [x] 02-01-PLAN.md — ProductData TypedDict + BaseCrawler ABC + parse_title() + JSON fixtures + unit tests
+- [x] 02-02-PLAN.md — TiendasishopCrawler + MacCenterCrawler + db/crud.py + deduplication unit tests
+- [x] 02-03-PLAN.md — CLI crawl command wiring + playwright dependency + live crawl verification
 
 **Success Criteria:**
 1. `apple-deals crawl` fetches products from both stores and prints a summary
@@ -84,8 +84,8 @@
 - DB-05: `apple-deals db stats`
 
 **Plans:**
-- [ ] 03-01-PLAN.md — psycopg2-binary optional dep + db/crud.py (prune_old_records, count_prunable, get_db_stats) + unit tests
-- [ ] 03-02-PLAN.md — Implement db_clean (--days, --dry-run), db_stats (Rich table), _auto_prune hook in crawl()
+- [x] 03-01-PLAN.md — psycopg2-binary optional dep + db/crud.py (prune_old_records, count_prunable, get_db_stats) + unit tests
+- [x] 03-02-PLAN.md — Implement db_clean (--days, --dry-run), db_stats (Rich table), _auto_prune hook in crawl()
 
 **Success Criteria:**
 1. Setting DATABASE_URL to a Neon connection string switches backend with no code changes
@@ -126,8 +126,8 @@
 - ALRT-02: Alert threshold + Telegram credentials configurable via env vars / config
 
 **Plans:**
-- [ ] 05-01-PLAN.md — Alert module core: telegram.py with threshold logic, message formatting, env var config, httpx send; unit tests
-- [ ] 05-02-PLAN.md — Crawl pipeline integration: crud.py enriched return type, crawl() alert wiring, integration tests
+- [x] 05-01-PLAN.md — Alert module core: telegram.py with threshold logic, message formatting, env var config, httpx send; unit tests
+- [x] 05-02-PLAN.md — Crawl pipeline integration: crud.py enriched return type, crawl() alert wiring, integration tests
 
 **Wave structure:**
 | Wave | Plans | Description |
@@ -153,9 +153,9 @@
 - DEV-06: npx autoskills after stack finalized
 
 **Plans:**
-- [ ] 06-01-PLAN.md — GitHub Actions daily cron workflow (crawl.yml)
-- [ ] 06-02-PLAN.md — Docker + docker-compose setup (Dockerfile, compose, .env.example)
-- [ ] 06-03-PLAN.md — npx autoskills installation + README documentation
+- [x] 06-01-PLAN.md — GitHub Actions daily cron workflow (crawl.yml)
+- [x] 06-02-PLAN.md — Docker + docker-compose setup (Dockerfile, compose, .env.example)
+- [x] 06-03-PLAN.md — npx autoskills installation + README documentation
 
 **Success Criteria:**
 1. GitHub Actions workflow triggers daily and `apple-deals crawl` runs successfully in CI
@@ -182,7 +182,7 @@
 - DOCS-03: GitHub Actions workflow auto-deploys docs on push to main
 
 **Plans:**
-- [ ] 07-01-PLAN.md — MkDocs setup, 5 doc pages, GitHub Actions deploy, build validation
+- [x] 07-01-PLAN.md — MkDocs setup, 5 doc pages, GitHub Actions deploy, build validation
 
 **Success Criteria:**
 1. `mkdocs serve` renders the docs site locally without errors
@@ -196,37 +196,37 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEV-01 | Phase 1 | Pending |
-| DEV-02 | Phase 1 | Pending |
-| DEV-03 | Phase 1 | Pending |
-| DEV-04 | Phase 1 | Pending |
-| DB-01 | Phase 1 | Pending |
-| CLI-03 | Phase 1 | Pending |
-| CRAWL-01 | Phase 2 | Pending |
-| CRAWL-02 | Phase 2 | Pending |
-| CRAWL-03 | Phase 2 | Pending |
-| CRAWL-04 | Phase 2 | Pending |
-| CLI-01 | Phase 2 | Pending |
-| DB-02 | Phase 3 | Pending |
-| DB-03 | Phase 3 | Pending |
-| DB-04 | Phase 3 | Pending |
-| DB-05 | Phase 3 | Pending |
-| TUI-01 | Phase 4 | Pending |
-| TUI-02 | Phase 4 | Pending |
-| TUI-03 | Phase 4 | Pending |
-| TUI-04 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| ALRT-01 | Phase 5 | Pending |
-| ALRT-02 | Phase 5 | Pending |
-| CRAWL-05 | Phase 6 | Pending |
-| DEV-05 | Phase 6 | Pending |
-| DEV-06 | Phase 6 | Pending |
-| DOCS-01 | Phase 7 | Pending |
-| DOCS-02 | Phase 7 | Pending |
-| DOCS-03 | Phase 7 | Pending |
+| DEV-01 | Phase 1 | Done ✅ |
+| DEV-02 | Phase 1 | Done ✅ |
+| DEV-03 | Phase 1 | Done ✅ |
+| DEV-04 | Phase 1 | Done ✅ |
+| DB-01 | Phase 1 | Done ✅ |
+| CLI-03 | Phase 1 | Done ✅ |
+| CRAWL-01 | Phase 2 | Done ✅ |
+| CRAWL-02 | Phase 2 | Done ✅ |
+| CRAWL-03 | Phase 2 | Done ✅ |
+| CRAWL-04 | Phase 2 | Done ✅ |
+| CLI-01 | Phase 2 | Done ✅ |
+| DB-02 | Phase 3 | Done ✅ |
+| DB-03 | Phase 3 | Done ✅ |
+| DB-04 | Phase 3 | Done ✅ |
+| DB-05 | Phase 3 | Done ✅ |
+| TUI-01 | Phase 4 | Done ✅ |
+| TUI-02 | Phase 4 | Done ✅ |
+| TUI-03 | Phase 4 | Done ✅ |
+| TUI-04 | Phase 4 | Done ✅ |
+| CLI-02 | Phase 4 | Done ✅ |
+| ALRT-01 | Phase 5 | Done ✅ |
+| ALRT-02 | Phase 5 | Done ✅ |
+| CRAWL-05 | Phase 6 | Done ✅ |
+| DEV-05 | Phase 6 | Done ✅ |
+| DEV-06 | Phase 6 | Done ✅ |
+| DOCS-01 | Phase 7 | Done ✅ |
+| DOCS-02 | Phase 7 | Done ✅ |
+| DOCS-03 | Phase 7 | Done ✅ |
 
-**Coverage:** 28 / 28 ✓
+**Coverage:** 28 / 28 ✅
 
 ---
 *Roadmap created: 2026-05-08*
-*Last updated: 2026-05-08 — Phase 6 plans created (3 plans, 2 waves)*
+*Last updated: 2026-05-11 — All 7 phases complete, v1.0 shipped*
