@@ -27,10 +27,14 @@ def _migrate_schema() -> None:
     inspector = inspect(engine)
     columns = {c["name"] for c in inspector.get_columns("products")}
     if "in_stock" not in columns:
-        with engine.begin() as conn:
-            conn.execute(
-                text("ALTER TABLE products ADD COLUMN in_stock BOOLEAN DEFAULT 1 NOT NULL")
-            )
+        try:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("ALTER TABLE products ADD COLUMN in_stock BOOLEAN DEFAULT true NOT NULL")
+                )
+        except Exception:
+            logger = __import__("logging").getLogger(__name__)
+            logger.warning("in_stock column migration skipped (already exists or incompatible)")
     _migrate_clean_sentinel_prices()
     _migrate_normalize_source()
 
