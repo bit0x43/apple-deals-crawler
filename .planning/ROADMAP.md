@@ -20,6 +20,13 @@
 
 </details>
 
+<details>
+<summary>✅ Phase 9: Data Quality & Bug Fixes (1 plan) — completed 2026-05-11</summary>
+
+- [x] Phase 9: Data Quality & Bug Fixes (1 plan) — Fix Shopify sentinel prices (99,999,999), DB data cleaning (22 sentinel records deleted, 61 source names normalized), plus TUI crash fixes from previous session — completed 2026-05-11
+
+</details>
+
 ## Requirement Traceability — v1.0
 
 Archived to `.planning/milestones/v1.0-REQUIREMENTS.md`. All 28 v1 requirements validated.

@@ -13,6 +13,7 @@ from apple_deals.crawlers.base import (
 
 BASE_URL = "https://co.tiendasishop.com"
 SOURCE = "tiendas ishop"
+SENTINEL_PRICE = 99_999_999
 
 MAC_COLLECTIONS: list[str] = [
     "apl-ps-13-inch-macbook-neo",
@@ -58,7 +59,11 @@ class TiendasishopCrawler(BaseCrawler):
             )
             return []
         products = response.json().get("products", [])
-        return [self._parse_product(p) for p in products if p.get("variants")]
+        return [
+            self._parse_product(p)
+            for p in products
+            if p.get("variants") and float(p["variants"][0].get("price", 0)) < SENTINEL_PRICE
+        ]
 
     def _parse_product(self, product: dict) -> ProductData:
         title: str = product["title"]

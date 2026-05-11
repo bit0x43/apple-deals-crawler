@@ -5,7 +5,7 @@ import os
 
 import httpx
 
-from apple_deals.crawlers.base import ProductData
+from apple_deals.crawlers.base import ProductData, parse_memory_gb
 
 logger = logging.getLogger(__name__)
 
@@ -118,10 +118,3 @@ def send_high_memory_alert(data: ProductData, memory: str) -> bool:
         f"{data['url']}"
     )
     return send_message(message)
-
-
-def parse_memory_gb(memory: str) -> list[int]:
-    """Extract numeric GB values from a memory string like '16GB, 24GB'."""
-    import re
-
-    return [int(m) for m in re.findall(r"(\d+)\s*GB", memory.upper())]
