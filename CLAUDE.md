@@ -31,6 +31,14 @@ source (store), crawled_at (timestamp).
 - Docker + docker-compose
 - GitHub Actions (daily schedule)
 
+## User preferences
+- **GitHub username:** bit0x43
+- **Author name:** Cristian Rincón (visible in commits)
+- **Local workspace:** `/Users/crincon/Documents/study/sandbox/apple-deals-crawler`
+- **Shell:** zsh (macOS)
+- Never commit `.agents/`, `.claude/`, or `skills-lock.json` to any repo (personal dev config — already in `.gitignore`)
+- Use absolute paths in planning/agent artifacts only when necessary; prefer relative paths for portability
+
 ## Tone & conventions
 - This is a dev tool: CLI output should be precise, readable, and opinionated
 - Prefer explicit over implicit
