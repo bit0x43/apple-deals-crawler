@@ -29,7 +29,7 @@ jobs:
         run: uv sync --locked --no-dev --extra postgres
 
       - name: Install Playwright Chromium
-        run: python -m playwright install --with-deps chromium
+        run: uv run python -m playwright install --with-deps chromium
 
       - name: Run crawl
         run: uv run apple-deals crawl
