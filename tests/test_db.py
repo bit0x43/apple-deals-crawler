@@ -12,7 +12,7 @@ def test_init_db_creates_products_table() -> None:
 
 
 def test_products_table_has_correct_columns() -> None:
-    """Products table has all 10 required columns."""
+    """Products table has all required columns."""
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     columns = {col["name"] for col in inspect(engine).get_columns("products")}
@@ -26,6 +26,7 @@ def test_products_table_has_correct_columns() -> None:
         "price",
         "url",
         "source",
+        "in_stock",
         "crawled_at",
     }
     assert required == columns

@@ -53,8 +53,9 @@ def test_product_data_fields() -> None:
         "price": 4699000.00,
         "url": "https://example.com/mac-mini",
         "source": "tiendas ishop",
+        "in_stock": True,
     }
-    assert len(data) == 8
+    assert len(data) == 9
     assert data["reference"] == "Mac mini M4"
     assert data["sku"] == "MU9E3LZ/A"
     assert data["memory"] is None
@@ -63,6 +64,7 @@ def test_product_data_fields() -> None:
     assert data["price"] == 4699000.00
     assert data["url"] == "https://example.com/mac-mini"
     assert data["source"] == "tiendas ishop"
+    assert data["in_stock"] is True
 
 
 def test_base_crawler_is_abstract() -> None:

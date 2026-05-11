@@ -18,7 +18,10 @@ def session() -> Generator[Session]:
 
 
 def _make_product(
-    sku: str = "MU9E3LZ/A", price: float = 4699000.0, source: str = "tiendas ishop"
+    sku: str = "MU9E3LZ/A",
+    price: float = 4699000.0,
+    source: str = "tiendas ishop",
+    in_stock: bool = True,
 ) -> ProductData:
     return ProductData(
         reference="Mac mini: Chip M4",
@@ -29,6 +32,7 @@ def _make_product(
         price=price,
         url="https://co.tiendasishop.com/products/mac-mini-m4",
         source=source,
+        in_stock=in_stock,
     )
 
 
@@ -84,3 +88,17 @@ def test_deduplication_same_sku_different_source(session: Session) -> None:
     upsert_if_changed(session, _make_product(sku="MU9E3LZ/A", price=4750000.0, source="mac-center"))
     assert get_last_price(session, "MU9E3LZ/A", "tiendas ishop") == pytest.approx(4699000.0)
     assert get_last_price(session, "MU9E3LZ/A", "mac-center") == pytest.approx(4750000.0)
+
+
+def test_skip_unchanged_stock_status(session: Session) -> None:
+    upsert_if_changed(session, _make_product(price=4699000.0, in_stock=True))
+    inserted, old_price = upsert_if_changed(session, _make_product(price=4699000.0, in_stock=True))
+    assert inserted is False
+    assert old_price is None
+
+
+def test_insert_changed_stock_status(session: Session) -> None:
+    upsert_if_changed(session, _make_product(price=4699000.0, in_stock=True))
+    inserted, old_price = upsert_if_changed(session, _make_product(price=4699000.0, in_stock=False))
+    assert inserted is True
+    assert old_price == pytest.approx(4699000.0)

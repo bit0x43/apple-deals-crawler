@@ -4,7 +4,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from apple_deals.crawlers.base import BaseCrawler
+from apple_deals.crawlers.base import BaseCrawler, enrich_memory, has_high_memory, has_low_memory
 from apple_deals.db.crud import count_prunable, get_db_stats, prune_old_records
 from apple_deals.db.session import engine, get_session, init_db
 from apple_deals.tui.app import run_tui
@@ -25,7 +25,11 @@ def main() -> None:
 @app.command()
 def crawl() -> None:
     """Crawl product prices from all configured stores."""
-    from apple_deals.alerts.telegram import send_alert
+    from apple_deals.alerts.telegram import (
+        HIGH_MEMORY_THRESHOLD,
+        send_alert,
+        send_high_memory_alert,
+    )
     from apple_deals.crawlers.mac_center import MacCenterCrawler
     from apple_deals.crawlers.tiendasishop import TiendasishopCrawler
     from apple_deals.db.crud import upsert_if_changed
@@ -37,11 +41,18 @@ def crawl() -> None:
 
     session = get_session()
     total_alerts = 0
+    total_high_memory = 0
     try:
         for store_name, crawler in crawlers:
             products = crawler.crawl()
+            before = len(products)
+
+            products = enrich_memory(products, store_name)
+            products = [p for p in products if not has_low_memory(p.get("memory"))]
+
             store_inserted = 0
             store_alerts = 0
+            store_high = 0
             for p in products:
                 inserted, old_price = upsert_if_changed(session, p)
                 if inserted:
@@ -49,16 +60,27 @@ def crawl() -> None:
                     if old_price is not None and old_price != p["price"]:
                         if send_alert(p, old_price, p["price"]):
                             store_alerts += 1
+                    memory = p.get("memory")
+                    if memory and has_high_memory(memory, HIGH_MEMORY_THRESHOLD):
+                        if send_high_memory_alert(p, memory):
+                            store_high += 1
             total_alerts += store_alerts
+            total_high_memory += store_high
+            filtered = before - len(products)
             typer.echo(
-                f"{store_name}: {len(products)} products found, "
-                f"{store_inserted} inserted, {store_alerts} alerts fired"
+                f"{store_name}: {len(products)} products crawled"
+                f" ({filtered} filtered for low memory),"
+                f" {store_inserted} inserted,"
+                f" {store_alerts} price-drop alerts,"
+                f" {store_high} high-memory alerts"
             )
     finally:
         session.close()
 
     if total_alerts == 0:
         logger.info("No price drops detected this crawl.")
+    if total_high_memory == 0:
+        logger.info("No high-memory products found in stock.")
     _auto_prune()
 
 

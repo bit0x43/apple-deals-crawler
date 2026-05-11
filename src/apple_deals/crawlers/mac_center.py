@@ -62,4 +62,5 @@ class MacCenterCrawler(BaseCrawler):
             price=float(variant["price"]),
             url=f"{BASE_URL}/products/{handle}",
             source=SOURCE,
+            in_stock=bool(variant.get("available", True)),
         )

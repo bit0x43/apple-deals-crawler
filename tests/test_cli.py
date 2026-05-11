@@ -1,8 +1,13 @@
+from unittest.mock import patch
+
 from typer.testing import CliRunner
 
 from apple_deals.cli.main import app
+from apple_deals.crawlers.base import ProductData
 
 runner = CliRunner()
+
+_EMPTY_CRAWL: list[ProductData] = []
 
 
 def test_help_exits_zero() -> None:
@@ -29,7 +34,13 @@ def test_db_help_lists_subcommands() -> None:
 
 def test_crawl_exits_zero() -> None:
     """apple-deals crawl exits 0 (crawl command implemented)."""
-    result = runner.invoke(app, ["crawl"])
+    with (
+        patch("apple_deals.crawlers.mac_center.MacCenterCrawler.crawl", return_value=_EMPTY_CRAWL),
+        patch(
+            "apple_deals.crawlers.tiendasishop.TiendasishopCrawler.crawl", return_value=_EMPTY_CRAWL
+        ),
+    ):
+        result = runner.invoke(app, ["crawl"])
     assert result.exit_code == 0
     assert "tiendas ishop" in result.output
     assert "mac-center" in result.output

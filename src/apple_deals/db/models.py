@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Numeric, String, func
+from sqlalchemy import Boolean, DateTime, Numeric, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -20,4 +20,5 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Numeric(precision=12, scale=2), nullable=False)
     url: Mapped[str] = mapped_column(String(2048), nullable=False)
     source: Mapped[str] = mapped_column(String(100), nullable=False)
+    in_stock: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     crawled_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
